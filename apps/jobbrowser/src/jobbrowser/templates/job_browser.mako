@@ -421,7 +421,7 @@ ${ commonheader("Job Browser", "jobbrowser", user, request) | n,unicode }
     </div>
 
     <div class="tab-pane" id="job-mapreduce-page-tasks">
-      ${_('Filter')} <input type="text" class="input-xlarge search-query" placeholder="${_('Filter by id, name, user...')}" value="user:${ user.username }">
+      ${_('Filter')} <input type="text" class="input-xlarge search-query" placeholder="${_('Filter by id, name, user...')}">
       <span class="btn-group">
         <class="btn-group">
           <a class="btn btn-status btn-success" data-value="completed">${ _('MAP') }</a>
@@ -816,9 +816,7 @@ ${ commonheader("Job Browser", "jobbrowser", user, request) | n,unicode }
     <div class="bar" data-bind="style: {'width': progress() + '%'}"></div>
   </div>
 
-  <a href="javascript:void(0)" data-bind="click: function() { control('kill'); }">${ _('Stop') }</a> |
-  <a href="javascript:void(0)" data-bind="click: function() { control('resume'); }">${ _('Resume')}</a> |
-  <a href="javascript:void(0)" data-bind="click: function() { control('rerun'); }">${ _('Rerun') }</a>
+  <div data-bind="template: { name: 'actions' }"></div>
 
   <br>
 
@@ -840,6 +838,16 @@ ${ commonheader("Job Browser", "jobbrowser", user, request) | n,unicode }
     </div>
 
     <div class="tab-pane" id="schedule-page-tasks">
+      <div data-bind="template: { name: 'actions' }"></div>
+      
+      ${_('Filter')} <input type="text" class="input-xlarge search-query"  placeholder="${_('Filter by id, name, user...')}" />
+      <div class="btn-group">
+        <select size="3" multiple="true"></select>
+        <a class="btn btn-status btn-success" data-value="completed">${ _('Succeeded') }</a>
+        <a class="btn btn-status btn-warning" data-value="running">${ _('Running') }</a>
+        <a class="btn btn-status btn-danger disable-feedback" data-value="failed">${ _('Failed') }</a>
+      </div>
+    
       <table id="jobsTable" class="datatables table table-condensed">
         <thead>
         <tr>
@@ -1034,14 +1042,14 @@ ${ commonheader("Job Browser", "jobbrowser", user, request) | n,unicode }
       self.mainType = ko.observable(vm.interface());
 
       self.hasKill = ko.computed(function() {
-        return ['MAPREDUCE', 'SPARK', 'workflow'].indexOf(self.type()) != -1;
+        return ['MAPREDUCE', 'SPARK', 'workflow', 'schedule'].indexOf(self.type()) != -1;
       });
       self.killEnabled = ko.computed(function() {
         return self.hasKill() && self.apiStatus() == 'RUNNING';
       });
 
       self.hasResume = ko.computed(function() {
-        return ['workflow'].indexOf(self.type()) != -1;
+        return ['workflow', 'schedule'].indexOf(self.type()) != -1;
       });
       self.resumeEnabled = ko.computed(function() {
         return self.hasResume() && self.apiStatus() == 'PAUSED';
@@ -1055,7 +1063,7 @@ ${ commonheader("Job Browser", "jobbrowser", user, request) | n,unicode }
       });
 
       self.hasPause = ko.computed(function() {
-        return ['workflow'].indexOf(self.type()) != -1;
+        return ['workflow', 'schedule'].indexOf(self.type()) != -1;
       });
       self.pauseEnabled = ko.computed(function() {
         return self.hasPause() && self.apiStatus() == 'RUNNING';
